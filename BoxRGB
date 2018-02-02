@@ -1,0 +1,9 @@
+//Simply a box with red, green, and blue mean values
+class BoxRGB
+{
+  float R, G, B;
+  BoxRGB()
+  {
+    R=G=B=0;
+  }
+}
