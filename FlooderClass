@@ -1,0 +1,153 @@
+class FlooderClass
+{
+  int xmin, xmax, ymin, ymax;
+  int count;
+  int[] center;
+  boolean used;
+  boolean[][] pos;
+  int[][] border;
+  boolean first;
+  FlooderClass() {
+    reset();
+  }
+
+  void reset()
+  {
+    center = new int[] {0, 0};
+    first = true;
+    used = false;
+    pos = new boolean[BOXSIZE][BOXSIZE];
+    border = new int[BOXSIZE][BOXSIZE];
+    count = 0;
+  }
+
+  void setNew(int y, int x)
+  {
+    int ynew = y * vid.height/BOXSIZE;
+    int xnew = x * vid.width/BOXSIZE;
+    if ((xmin > xnew) || first) xmin = xnew;
+    if ((xmax < xnew) || first) xmax = xnew;
+    if ((ymin > ynew) || first) ymin = ynew;
+    if ((ymax < ynew) || first) ymax = ynew;
+    first = false;
+    pos[y][x] = true;
+    used = true;
+  }
+  void setNew(float ynew, float xnew) {
+    setNew((int)ynew, (int)xnew);
+  }
+
+  void display()
+  {
+    int[] startpos = {0, 0};
+    boolean done = false;
+    for (int a = 0; a < BOXSIZE; a++)
+    {
+      if (done) break;
+      for (int b = 0; b < BOXSIZE; b++)
+      {
+        if (done) break;
+        if (pos[a][b])
+        {
+          startpos = new int[] {a, b};
+          done = true;
+        }
+      }
+    }
+    int[] curpos = startpos;
+    //theo pavlidis algorithm
+    done = false;
+    int[] theSeven = {1, 0, -1, 0, 1, 0, -1};
+    int[] facing = {0, 1}; //east
+    int ctr = 0;
+    int maX = 4;
+    strokeWeight(1);
+    stroke(255, 0, 0);
+    fill(0, 0, 255, 100);
+    beginShape();
+    while (!done)
+    {
+      //println(firstpos);
+      if (border[startpos[0]][startpos[1]] > maX && ctr > 2)
+      {
+        done = true;
+        break;
+      }
+
+      (border[curpos[0]][curpos[1]])++;
+      int h = ((2*curpos[1])*vid.width +vid.width) /(BOXSIZE*2);
+      int v = ((2*curpos[0])*vid.height+vid.height)/(BOXSIZE*2);
+      vertex(h, v);
+      ctr++;
+      //if (curpos == startpos) firstpos++;
+
+      int[][] next = new int[3][2];
+      //                                            LEFT    MID   RIGHT
+      if (facing[1] == 1) next = new int[][]       {{-1, 1}, {0, 1}, {1, 1}};  //E
+      else if (facing[0] == 1) next = new int[][]  {{1, 1}, {1, 0}, {1, -1}}; //S
+      else if (facing[1] == -1) next = new int[][] {{1, -1}, {0, -1}, {-1, -1}};//W
+      else if (facing[0] == -1) next = new int[][] {{-1, -1}, {-1, 0}, {-1, 1}}; //N
+
+      int k = -1;
+      for (int i = 0; i < 3; i++)
+      {
+        int y = curpos[0] + next[i][0];
+        int x = curpos[1] + next[i][1];
+        if (y < 0 || y >= BOXSIZE) continue;
+        if (x < 0 || x >= BOXSIZE) continue;
+        if (pos[y][x]) // && border[y][x] < 3
+        {
+          curpos = new int[] {y, x};
+          k = i;
+          break;
+        }
+      }
+
+      if (!(k == -1 || k == 0)) continue;
+
+      int x = 1;
+      while (!(facing[0] == theSeven[x] && facing[1] == theSeven[x+1]))
+        x++;
+      if (k == -1) //turn right
+      {
+        facing[0] = theSeven[x+1];
+        facing[1] = theSeven[x+2];
+      } else if (k == 0) //turn left
+      {
+        facing[0] = theSeven[x-1];
+        facing[1] = theSeven[x];
+      }
+    }
+    endShape();
+
+    //for(int a = 0; a<BOXSIZE; a++)
+    //  for(int b = 0; b < BOXSIZE; b++)
+    //    if(border[a][b] > 0)
+    //      rect(b*vid.width/BOXSIZE, a*vid.height/BOXSIZE, vid.width/BOXSIZE, vid.height/BOXSIZE);
+  }
+
+  int[] getCenter()
+  {
+    center = new int[] {0, 0};
+    for (int a = 0; a < BOXSIZE; a++)
+      for (int b = 0; b < BOXSIZE; b++)
+        if (pos[a][b])
+        {
+          center[0] += a;
+          center[1] += b;
+        }
+    center[0] = center[0]*vid.height/BOXSIZE;
+    center[1] = center[1]*vid.width/BOXSIZE;
+    center[0] /= count;
+    center[1] /= count;
+    return center;
+  }
+
+  void displayCenter()
+  {
+    getCenter();
+    stroke(0);
+    fill(0);
+    ellipse(center[1], center[0], 5, 5);
+  }
+}
