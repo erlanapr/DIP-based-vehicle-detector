@@ -8,7 +8,7 @@ int BOXCOUNTTHRESHOLD = 150;
 int DIFFBOXCOUNT = 50;
 float XCTHRESHOLD = 0.64;
 //float HUMANTHRESHOLD = 0.48;
-int DIRRR = 3;          //closeness antar matrix utk floodfill
+int DIRRR = 3;          //closeness index for floodfill
 int MAXCT = 20;
 boolean DISPLAYBOX = false;
 boolean DISPLAYFLOOD = false;
@@ -55,13 +55,7 @@ void setup()
       firstFrame[i][j] = new BoxRGB();
     }
 
-  /*-------------------------------KORELASI REFERENSI----------------------------*/
-  /*(old) MOBIL = mobil1.jpg ---- MOTOR = motor2.jpg ---- HUMAN = ??? */
-  /*
-  MOBIL: mobil1.jpg
-   MOTOR: mot1.jpg mot2.jpg
-   HUMAN: jalan1.jpg jalan2.jpg jalan3.jpg
-   */
+  /*-------------------------------CORRELATION REFFERENCE----------------------------*/
    
   xc[0] = new XCorrReference("mobil4.jpg");
   xc[0].txt = "mobil";
@@ -73,7 +67,7 @@ void setup()
   xc[1].count = 49;
   xc[2].count = 1;
 
-  /*-----------------------------------------------------------------------------*/
+  /*--------------------------------------------------------------------------------*/
 
   for (int d=0; d<types; d++) println(xc[d].mean);
 }
@@ -151,7 +145,7 @@ void draw()
     text(tx, 650, 470);
     //displayUI();
 
-    //cari dimana perbedaan antara boxes dgn firstframe -> diffboxsmall
+	//diffboxsmal = position of differences between 'boxes' and 'firstFrame'
     for (int a = 0; a < BOXSIZE; a++)
       for (int b = 0; b < BOXSIZE; b++)
       {
